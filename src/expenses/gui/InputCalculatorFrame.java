@@ -5,9 +5,12 @@
  */
 package expenses.gui;
 
+
 import com.sun.glass.events.KeyEvent;
 import expenses.dao.CategoriesDAO;
+import expenses.dao.SelfHistoryDAO;
 import expenses.pojo.GlobalData;
+import expenses.pojo.SelfHistory;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -32,7 +35,7 @@ public class InputCalculatorFrame extends javax.swing.JFrame {
     boolean isResult = false;
     String temp, calResult, desc, uid;
     String category, date, descript;
-    long amount;
+    int amount;
     Date d;
 
     public InputCalculatorFrame() {
@@ -650,29 +653,42 @@ public class InputCalculatorFrame extends javax.swing.JFrame {
 
         if (!(txtInputField.getText().isEmpty())) {
             Double x = Double.parseDouble(txtInputField.getText().toString());
-            amount = Math.round(x);
+            //amount = Math.round(x);
             if (!(category.equals("Select a Category"))) {
                 if (DateChooser.getDate() != null) {
                     SimpleDateFormat dformat = new SimpleDateFormat("dd-MMM-yyyy");
                     date = dformat.format(DateChooser.getDate());
                     d = DateChooser.getDate();
 
-                    uid = "sonu123";
-                     int temp11=(int)amount;
+                    uid=GlobalData.getUsername();
+                    //uid="sonu123";
+                    amount=(int)Math.round(x);
                     //take from USERLOGINFRAME
 
                     System.out.println("Information Entered:\nAmount: " + amount + "\nDate: " + date + "\nCategory: " + category + "\nDescription: " + descript + d);
                     try {
-                        System.out.println(category.toUpperCase());
-                        boolean res = CategoriesDAO.addCategoryExpense(uid, category.toUpperCase(),temp11);
-                        
+                        //System.out.println(category.toUpperCase());
+                        boolean resCat = CategoriesDAO.addCategoryExpense(uid, category.toUpperCase(),amount);
+                        String txid=SelfHistoryDAO.getTxnId();
+                        System.out.println("Txn ID: "+txid);                      
 
-                        if (res) {
+                        /*if (resCat) {
                             JOptionPane.showMessageDialog(null, "Record entered succesfully", "Successful", JOptionPane.INFORMATION_MESSAGE);
                             return;
-
                         }
                         JOptionPane.showMessageDialog(null, "Not inserted", "Unsuccesful", JOptionPane.INFORMATION_MESSAGE);
+                        */
+                        
+                        SelfHistory obj=new SelfHistory(uid,txid,amount,d,category,descript);
+                        boolean resExp=SelfHistoryDAO.createTransaction(obj);
+                        
+                        if (resExp) {
+                            JOptionPane.showMessageDialog(null, "Record entered succesfully in Expenses", "Successful", JOptionPane.INFORMATION_MESSAGE);
+                            return;
+                        }
+                        JOptionPane.showMessageDialog(null, "Not inserted in Expenses", "Unsuccesful", JOptionPane.INFORMATION_MESSAGE);
+                        
+                        
 
                     } catch (SQLException ex) {
 
