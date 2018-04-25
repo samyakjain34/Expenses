@@ -64,7 +64,7 @@ public class UserDashboardFrame extends javax.swing.JFrame {
         lblBack.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
         lblBack.setForeground(new java.awt.Color(255, 255, 255));
         lblBack.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblBack.setText("BACK");
+        lblBack.setText("Logout");
         lblBack.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lblBackMouseClicked(evt);

@@ -5,6 +5,16 @@
  */
 package expenses.gui;
 
+import expenses.dao.SelfHistoryDAO;
+import expenses.pojo.GlobalData;
+import expenses.pojo.SelfHistory;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 /**
  *
  * @author Maraxys
@@ -14,8 +24,12 @@ public class ExpenseHistoryFrame extends javax.swing.JFrame {
     /**
      * Creates new form ExpenseHistoryFrame
      */
+    String eTxnId,eCat,eAmt,eDesc;
+    Date eDate;
     public ExpenseHistoryFrame() {
         initComponents();
+        super.setLocationRelativeTo(null);
+        showExpenseDataInTable();
     }
 
     /**
@@ -29,9 +43,24 @@ public class ExpenseHistoryFrame extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
+        lblBack = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jtSelfExpense = new javax.swing.JTable();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtDate = new javax.swing.JTextField();
+        txtAmt = new javax.swing.JTextField();
+        txtCat = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        ExpensesTable = new javax.swing.JTable();
+        txtDesc = new javax.swing.JTextArea();
+        btnClear = new javax.swing.JButton();
+        btnModify = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -40,15 +69,31 @@ public class ExpenseHistoryFrame extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(0, 51, 204));
 
+        lblBack.setFont(new java.awt.Font("Calibri", 1, 28)); // NOI18N
+        lblBack.setForeground(new java.awt.Color(255, 255, 255));
+        lblBack.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblBack.setText("Go Back");
+        lblBack.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblBackMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 170, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addComponent(lblBack, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(52, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(lblBack, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(646, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 720));
@@ -68,23 +113,148 @@ public class ExpenseHistoryFrame extends javax.swing.JFrame {
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 0, 1120, -1));
 
-        ExpensesTable.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        ExpensesTable.setModel(new javax.swing.table.DefaultTableModel(
+        jScrollPane2.setBorder(null);
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane2.setFont(new java.awt.Font("Calibri", 0, 28)); // NOI18N
+
+        jtSelfExpense.setAutoCreateRowSorter(true);
+        jtSelfExpense.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        jtSelfExpense.setFont(new java.awt.Font("Calibri", 0, 16)); // NOI18N
+        jtSelfExpense.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "Txn. ID", "Amount", "Date", "Category", "Description"
+                "TXN ID", "S. NO.", "DATE", "AMOUNT", "CATEGORY", "DESCRIPTION"
             }
-        ));
-        ExpensesTable.setColumnSelectionAllowed(true);
-        jScrollPane1.setViewportView(ExpensesTable);
-        ExpensesTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 200, 900, -1));
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jtSelfExpense.setGridColor(new java.awt.Color(255, 255, 255));
+        jtSelfExpense.setSelectionBackground(new java.awt.Color(0, 51, 204));
+        jtSelfExpense.getTableHeader().setReorderingAllowed(false);
+        jtSelfExpense.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jtSelfExpenseMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(jtSelfExpense);
+        if (jtSelfExpense.getColumnModel().getColumnCount() > 0) {
+            jtSelfExpense.getColumnModel().getColumn(0).setMinWidth(0);
+            jtSelfExpense.getColumnModel().getColumn(0).setPreferredWidth(0);
+            jtSelfExpense.getColumnModel().getColumn(0).setMaxWidth(0);
+            jtSelfExpense.getColumnModel().getColumn(1).setResizable(false);
+            jtSelfExpense.getColumnModel().getColumn(1).setPreferredWidth(2);
+            jtSelfExpense.getColumnModel().getColumn(2).setResizable(false);
+            jtSelfExpense.getColumnModel().getColumn(2).setPreferredWidth(5);
+            jtSelfExpense.getColumnModel().getColumn(3).setResizable(false);
+            jtSelfExpense.getColumnModel().getColumn(3).setPreferredWidth(5);
+            jtSelfExpense.getColumnModel().getColumn(4).setResizable(false);
+            jtSelfExpense.getColumnModel().getColumn(4).setPreferredWidth(10);
+            jtSelfExpense.getColumnModel().getColumn(5).setPreferredWidth(15);
+        }
+
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 260, 760, 300));
+
+        jLabel2.setText("Title");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(425, 425, 425)
+                .addComponent(jLabel2)
+                .addContainerGap(480, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(31, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addContainerGap())
+        );
+
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 120, 930, 60));
+
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setText("Date");
+        jPanel5.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 40, 80, -1));
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel3.setText("Amount");
+        jPanel5.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 92, 80, -1));
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel4.setText("Category");
+        jPanel5.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 143, 80, -1));
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel5.setText("Description");
+        jPanel5.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 100, -1));
+
+        txtDate.setEditable(false);
+        txtDate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtDateActionPerformed(evt);
+            }
+        });
+        jPanel5.add(txtDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 40, 120, 30));
+
+        txtAmt.setEditable(false);
+        jPanel5.add(txtAmt, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 90, 120, 30));
+
+        txtCat.setEditable(false);
+        jPanel5.add(txtCat, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 142, 120, 30));
+
+        txtDesc.setEditable(false);
+        txtDesc.setColumns(20);
+        txtDesc.setLineWrap(true);
+        txtDesc.setRows(5);
+        txtDesc.setWrapStyleWord(true);
+        jScrollPane1.setViewportView(txtDesc);
+
+        jPanel5.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 220, 260, 70));
+
+        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 260, 290, 300));
+
+        btnClear.setBackground(new java.awt.Color(255, 0, 51));
+        btnClear.setFont(new java.awt.Font("Calibri", 1, 20)); // NOI18N
+        btnClear.setForeground(new java.awt.Color(255, 255, 255));
+        btnClear.setText("CLEAR");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 580, 170, 40));
+
+        btnModify.setBackground(new java.awt.Color(0, 0, 255));
+        btnModify.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
+        btnModify.setForeground(new java.awt.Color(255, 255, 255));
+        btnModify.setText("MODIFY TRANSACTION");
+        btnModify.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModifyActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnModify, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 620, 290, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -99,6 +269,59 @@ public class ExpenseHistoryFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void lblBackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblBackMouseClicked
+        // TODO add your handling code here:
+        PersonalExpenseFrame personal = new PersonalExpenseFrame();
+        personal.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_lblBackMouseClicked
+
+    private void txtDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDateActionPerformed
+
+    private void jtSelfExpenseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtSelfExpenseMouseClicked
+        // TODO add your handling code here:
+        int row = jtSelfExpense.getSelectedRow();
+        TableModel model = jtSelfExpense.getModel();
+        txtDate.setText(model.getValueAt(row, 2).toString());
+        txtAmt.setText(model.getValueAt(row, 3).toString());
+        txtCat.setText(model.getValueAt(row, 4).toString());
+        txtDesc.setText(model.getValueAt(row, 5).toString());
+    }//GEN-LAST:event_jtSelfExpenseMouseClicked
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        // TODO add your handling code here:
+        txtDate.setText("");
+        txtAmt.setText("");
+        txtCat.setText("");
+        txtDesc.setText("");
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void btnModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModifyActionPerformed
+        // TODO add your handling code here:
+        if (txtDate.getText().isEmpty()) {
+
+            JOptionPane.showMessageDialog(null, "Please Select a Record", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+
+        }
+        int row = jtSelfExpense.getSelectedRow();
+        TableModel model = jtSelfExpense.getModel();
+        
+        eTxnId=model.getValueAt(row, 0).toString();
+        eDate=(Date) model.getValueAt(row, 2);
+        eAmt=txtAmt.getText();
+        eCat=txtCat.getText();
+        eDesc=txtDesc.getText();
+        
+       
+         InputCalculatorFrame ic=new InputCalculatorFrame(eTxnId,eCat,eAmt,eDesc,eDate);
+         ic.setVisible(true);
+         this.dispose();
+
+    }//GEN-LAST:event_btnModifyActionPerformed
 
     /**
      * @param args the command line arguments
@@ -136,10 +359,51 @@ public class ExpenseHistoryFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable ExpensesTable;
+    private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnModify;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jtSelfExpense;
+    private javax.swing.JLabel lblBack;
+    private javax.swing.JTextField txtAmt;
+    private javax.swing.JTextField txtCat;
+    private javax.swing.JTextField txtDate;
+    private javax.swing.JTextArea txtDesc;
     // End of variables declaration//GEN-END:variables
+
+    private void showExpenseDataInTable() {
+        try {
+            ArrayList<SelfHistory> selfTxList = SelfHistoryDAO.getExpenses(GlobalData.getUsername());
+
+            if (selfTxList.isEmpty()) {
+
+            } else {
+                DefaultTableModel model = (DefaultTableModel) jtSelfExpense.getModel();
+                Object[] row = new Object[6];                           //It shows the number of columns in the table i.e. 7 in our case
+                int count = 1;
+                for (SelfHistory obj : selfTxList) {
+                    row[0] = obj.getTxid();
+                    row[1] = count;
+                    row[2] = obj.getDate();
+                    row[3] = obj.getExpense();
+                    row[4] = obj.getCategory();
+                    row[5] = obj.getDesc();
+                    model.addRow(row);
+                    count++;
+                }
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "SQL Query Error in Table", "Error in Table!", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }

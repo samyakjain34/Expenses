@@ -17,7 +17,7 @@ public class CategorySelectionFrame extends javax.swing.JFrame {
     /**
      * Creates new form CategorySelectionFrame
      */
-    String cCat,cResult,cDesc;
+    String cCat,cResult,cDesc,tTxn;
     //String cDate;
     Date cDate;
     
@@ -26,12 +26,13 @@ public class CategorySelectionFrame extends javax.swing.JFrame {
         super.setLocationRelativeTo(null);
     }
     
-    public CategorySelectionFrame(String calResult,String desc,Date date) {
+    public CategorySelectionFrame(String cTxn,String calResult,String desc,Date date) {
       
         this();
         cDate=date;
         cResult=calResult;
         cDesc=desc;
+        tTxn=cTxn;
         
     }
     
@@ -317,14 +318,14 @@ public class CategorySelectionFrame extends javax.swing.JFrame {
 
         lblOthers.setFont(new java.awt.Font("Calibri", 0, 20)); // NOI18N
         lblOthers.setForeground(new java.awt.Color(255, 255, 255));
-        lblOthers.setText("Others");
+        lblOthers.setText("Other");
 
         javax.swing.GroupLayout panelOthersLayout = new javax.swing.GroupLayout(panelOthers);
         panelOthers.setLayout(panelOthersLayout);
         panelOthersLayout.setHorizontalGroup(
             panelOthersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelOthersLayout.createSequentialGroup()
-                .addContainerGap(61, Short.MAX_VALUE)
+                .addContainerGap(69, Short.MAX_VALUE)
                 .addComponent(lblOthers)
                 .addGap(58, 58, 58))
         );
@@ -537,7 +538,7 @@ public class CategorySelectionFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void openCalculator() {
-        InputCalculatorFrame frame=new InputCalculatorFrame(cCat,cResult,cDesc,cDate);
+        InputCalculatorFrame frame=new InputCalculatorFrame(tTxn,cCat,cResult,cDesc,cDate);
         frame.setVisible(true);
         this.dispose();
     }

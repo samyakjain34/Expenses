@@ -6,6 +6,7 @@
 package expenses.gui;
 
 import expenses.dao.UsersDAO;
+import expenses.pojo.GlobalData;
 import expenses.pojo.Users;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
@@ -266,6 +267,7 @@ public class UserLoginFrame extends javax.swing.JFrame {
             if(result){
                 //UserProfile.setUsername(uname);
                 //UserProfile.setUsertype(utype);
+                GlobalData.setUsername(uname);
                 JOptionPane.showMessageDialog(null,"Login Successful","Success!",JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
                 UserDashboardFrame userdash=new UserDashboardFrame();

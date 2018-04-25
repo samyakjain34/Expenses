@@ -33,7 +33,7 @@ public class InputCalculatorFrame extends javax.swing.JFrame {
     double num1, ans;
     boolean isSelected = false;
     boolean isResult = false;
-    String temp, calResult, desc, uid;
+    String temp, calResult, desc, uid,txnId;
     String category, date, descript;
     int amount;
     Date d;
@@ -59,6 +59,16 @@ public class InputCalculatorFrame extends javax.swing.JFrame {
             Logger.getLogger(InputCalculatorFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
          */
+    }
+    
+    public InputCalculatorFrame(String cTxn,String cCat, String cResult, String cDesc, Date cDate) {
+        this();
+        btnCategory.setText(cCat);
+        txtDesc.setText(cDesc);
+        txtInputField.setText(cResult);
+        DateChooser.setDate(cDate);
+        txnId=cTxn;
+        System.out.println(txnId);
     }
 
     /**
@@ -641,7 +651,7 @@ public class InputCalculatorFrame extends javax.swing.JFrame {
         d = DateChooser.getDate();
 
         //GlobalData.setCategorySelected(false);
-        CategorySelectionFrame categoryFrame = new CategorySelectionFrame(calResult, desc, d);
+        CategorySelectionFrame categoryFrame = new CategorySelectionFrame(txnId,calResult, desc, d);
         categoryFrame.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_btnCategoryActionPerformed
@@ -661,7 +671,7 @@ public class InputCalculatorFrame extends javax.swing.JFrame {
                     d = DateChooser.getDate();
 
                     uid=GlobalData.getUsername();
-                    //uid="sonu123";
+                    
                     amount=(int)Math.round(x);
                     //take from USERLOGINFRAME
 
@@ -669,24 +679,26 @@ public class InputCalculatorFrame extends javax.swing.JFrame {
                     try {
                         //System.out.println(category.toUpperCase());
                         boolean resCat = CategoriesDAO.addCategoryExpense(uid, category.toUpperCase(),amount);
-                        String txid=SelfHistoryDAO.getTxnId();
-                        System.out.println("Txn ID: "+txid);                      
-
-                        /*if (resCat) {
-                            JOptionPane.showMessageDialog(null, "Record entered succesfully", "Successful", JOptionPane.INFORMATION_MESSAGE);
+                        if(txnId!=null){
+                            System.out.println("txn not null");
                             return;
                         }
-                        JOptionPane.showMessageDialog(null, "Not inserted", "Unsuccesful", JOptionPane.INFORMATION_MESSAGE);
-                        */
+                        txnId=SelfHistoryDAO.getTxnId();
+                        System.out.println("Txn ID: "+txnId);                      
+
                         
-                        SelfHistory obj=new SelfHistory(uid,txid,amount,d,category,descript);
+                        
+                        SelfHistory obj=new SelfHistory(uid,txnId,amount,d,category,descript);
                         boolean resExp=SelfHistoryDAO.createTransaction(obj);
                         
-                        if (resExp) {
-                            JOptionPane.showMessageDialog(null, "Record entered succesfully in Expenses", "Successful", JOptionPane.INFORMATION_MESSAGE);
+                        if (resExp && resCat) {
+                            JOptionPane.showMessageDialog(null, "Your Expenses have been entered succesfully", "Transaction Successful", JOptionPane.INFORMATION_MESSAGE);
+                            PersonalExpenseFrame pef=new PersonalExpenseFrame();
+                            pef.setVisible(true);
+                            this.dispose();
                             return;
                         }
-                        JOptionPane.showMessageDialog(null, "Not inserted in Expenses", "Unsuccesful", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Failed to Insert expense", "Unsuccesful", JOptionPane.ERROR_MESSAGE);
                         
                         
 

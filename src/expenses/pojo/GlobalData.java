@@ -10,6 +10,15 @@ package expenses.pojo;
  * @author Maraxys
  */
 public class GlobalData {
+    public static String username;
+
+    public static String getUsername() {
+        return username;
+    }
+
+    public static void setUsername(String username) {
+        GlobalData.username = username;
+    }
     public static boolean categorySelected;
     public static String category;
 

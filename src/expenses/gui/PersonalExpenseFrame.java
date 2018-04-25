@@ -5,6 +5,12 @@
  */
 package expenses.gui;
 
+import expenses.dao.CategoriesDAO;
+import expenses.pojo.Categories;
+import expenses.pojo.GlobalData;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -17,15 +23,24 @@ import org.jfree.data.general.PieDataset;
  */
 public class PersonalExpenseFrame extends javax.swing.JFrame {
 
-     ChartPanel chartPanel;
+    ChartPanel chartPanel;
+    Categories catwise;
+
     /**
      * Creates new form PersonalExpenseFrame
      */
     public PersonalExpenseFrame() {
         initComponents();
         super.setLocationRelativeTo(null);
+
+        try {
+            catwise=CategoriesDAO.getCatwiseExpense(GlobalData.getUsername());
+        } catch (SQLException ex) {
+            Logger.getLogger(PersonalExpenseFrame.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        }
         display();
-        
+
         //super.setLocation(340, 0);
     }
 
@@ -42,12 +57,13 @@ public class PersonalExpenseFrame extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         lblClose1 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
         InternalFrame = new javax.swing.JInternalFrame();
         jPanel5 = new javax.swing.JPanel();
         btnAdd = new javax.swing.JButton();
         btnModifyBudget = new javax.swing.JButton();
         btnTxHistory = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        lblBack = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -77,7 +93,7 @@ public class PersonalExpenseFrame extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 909, Short.MAX_VALUE)
+                .addGap(0, 1029, Short.MAX_VALUE)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -87,50 +103,76 @@ public class PersonalExpenseFrame extends javax.swing.JFrame {
                 .addGap(0, 30, Short.MAX_VALUE))
         );
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 960, 80));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1080, 80));
 
-        jPanel3.setBackground(new java.awt.Color(48, 48, 48));
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 447, Short.MAX_VALUE)
-        );
-
-        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 36, -1, -1));
-
+        InternalFrame.setBackground(new java.awt.Color(255, 255, 255));
         InternalFrame.setBorder(null);
+        InternalFrame.setForeground(new java.awt.Color(255, 255, 255));
         InternalFrame.setEnabled(false);
         InternalFrame.setFocusable(false);
         InternalFrame.setVisible(true);
         InternalFrame.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel1.add(InternalFrame, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 50, 880, 350));
+        jPanel1.add(InternalFrame, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, 50, 1100, 490));
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 255));
         jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        btnAdd.setText("ADD");
+        btnAdd.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
+        btnAdd.setText("ADD EXPENSE");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAddActionPerformed(evt);
             }
         });
-        jPanel5.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 143, -1, 30));
+        jPanel5.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 330, 230, 80));
 
+        btnModifyBudget.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
         btnModifyBudget.setText("MODIFY BUDGET");
-        jPanel5.add(btnModifyBudget, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 150, -1, -1));
+        jPanel5.add(btnModifyBudget, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 330, 210, 80));
 
+        btnTxHistory.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
         btnTxHistory.setText("TRANSACTION HISTORY");
-        jPanel5.add(btnTxHistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 150, -1, -1));
+        btnTxHistory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTxHistoryActionPerformed(evt);
+            }
+        });
+        jPanel5.add(btnTxHistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 330, 230, 80));
 
-        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 280, 860, 200));
+        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 250, 1080, 470));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 960, 480));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 0, 1080, 720));
+
+        jPanel3.setBackground(new java.awt.Color(48, 48, 48));
+
+        lblBack.setFont(new java.awt.Font("Calibri", 1, 28)); // NOI18N
+        lblBack.setForeground(new java.awt.Color(255, 255, 255));
+        lblBack.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblBack.setText("Go Back");
+        lblBack.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblBackMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addComponent(lblBack, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(62, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(lblBack, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(650, Short.MAX_VALUE))
+        );
+
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 200, 720));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -142,10 +184,25 @@ public class PersonalExpenseFrame extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-        InputCalculatorFrame cal= new InputCalculatorFrame();
+        InputCalculatorFrame cal = new InputCalculatorFrame();
         cal.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnTxHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTxHistoryActionPerformed
+        // TODO add your handling code here:
+
+        ExpenseHistoryFrame ehf = new ExpenseHistoryFrame();
+        ehf.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnTxHistoryActionPerformed
+
+    private void lblBackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblBackMouseClicked
+        // TODO add your handling code here:
+        UserDashboardFrame ud = new UserDashboardFrame();
+        ud.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_lblBackMouseClicked
 
     /**
      * @param args the command line arguments
@@ -178,9 +235,9 @@ public class PersonalExpenseFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 //new PersonalExpenseFrame().setVisible(true);
-               PersonalExpenseFrame pieChart = new PersonalExpenseFrame();
-               
-            pieChart.display();
+                PersonalExpenseFrame pieChart = new PersonalExpenseFrame();
+
+                pieChart.display();
             }
         });
     }
@@ -195,56 +252,59 @@ public class PersonalExpenseFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JLabel lblBack;
     private javax.swing.JLabel lblClose1;
     // End of variables declaration//GEN-END:variables
 
-        private JFreeChart create3DPieChart(PieDataset dataset){
+    private JFreeChart create3DPieChart(PieDataset dataset) {
 
-    /** Create a PieDataSet* */
+        /**
+         * Create a PieDataSet*
+         */
+        /**
+         * Create 3D Pie Chart based on this dataset*
+         */
+        JFreeChart chart = ChartFactory.createPieChart("", dataset, true, true, true);
 
-
-    /** Create 3D Pie Chart based on this dataset* */
-   JFreeChart chart=ChartFactory.createPieChart("", dataset, true, true, true);
- 
 //JFreeChart chart = ChartFactory.createPieChart3D("Result", dataset, true, true, true);
+        return chart;
 
-    return chart;
+    }
 
-
-}
     private PieDataset createPieDataSet() {
+
+        DefaultPieDataset pieDataset = new DefaultPieDataset();
+        pieDataset.setValue("Grocery", new Double(catwise.getGrocery()));
+        pieDataset.setValue("Travel", new Double(catwise.getTravel()));
+        pieDataset.setValue("Health", new Double(catwise.getHealth()));
+        pieDataset.setValue("Eatout", new Double(catwise.getEatout()));
         
-           DefaultPieDataset pieDataset = new DefaultPieDataset();
-        pieDataset.setValue("English", new Integer(70));
-        pieDataset.setValue("Math", new Integer(10));
-        pieDataset.setValue("Physics", new Integer(75));
-        pieDataset.setValue("Chemistry", new Integer(80));
-        pieDataset.setValue("Urdu", new Integer(45));
-        pieDataset.setValue("Islamiyat", new Integer(30));
-   /* DefaultPieDataset pieDataset = new DefaultPieDataset();
-    pieDataset.setValue("Othes", new Integer(15));
-    pieDataset.setValue("PHP", new Integer(15));
-    pieDataset.setValue("Java", new Integer(30));
-    pieDataset.setValue("Perl", new Integer(10));
-    pieDataset.setValue("C,C++,C#", new Integer(30));*/
+        pieDataset.setValue("Group", new Double(catwise.getGroupexp()));
+        pieDataset.setValue("Bills", new Double(catwise.getBills()));
+        pieDataset.setValue("Education", new Double(catwise.getEducation()));
+        pieDataset.setValue("Other", new Double(catwise.getOther()));
+        pieDataset.setValue("Shopping", new Double(catwise.getShopping()));
+        
+        pieDataset.setValue("Entertainment", new Double(catwise.getEntertain()));
 
-    return pieDataset;
+    
+        return pieDataset;
 
-}
+    }
 
-private void display(){
+    private void display() {
 
-    final PieDataset dataset = this.createPieDataSet();
-    final JFreeChart chart   = this.create3DPieChart(dataset);
+        final PieDataset dataset = this.createPieDataSet();
+        final JFreeChart chart = this.create3DPieChart(dataset);
 
-    chartPanel = new ChartPanel(chart, false);
-    this.InternalFrame.setContentPane(chartPanel);
-    this.InternalFrame.pack();
-    this.InternalFrame.setVisible(true);
-    this.InternalFrame.setSize(10,10);
+        chartPanel = new ChartPanel(chart, false);
+        this.InternalFrame.setContentPane(chartPanel);
+        this.InternalFrame.pack();
+        this.InternalFrame.setVisible(true);
+        this.InternalFrame.setSize(10, 10);
 
-    this.pack();
-    this.setVisible(true);
+        this.pack();
+        this.setVisible(true);
 
-}
+    }
 }

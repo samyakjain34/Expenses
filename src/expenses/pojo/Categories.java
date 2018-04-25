@@ -11,6 +11,22 @@ package expenses.pojo;
  */
 public class Categories {
     
+    public Categories(String userId, double budget, double shopping, double travel, double bills, double grocery, double health, double eatout, double entertain, double other, double groupexp, double education, double clothes) {
+        this.userId = userId;
+        this.budget = budget;
+        this.shopping = shopping;
+        this.travel = travel;
+        this.bills = bills;
+        this.grocery = grocery;
+        this.health = health;
+        this.eatout = eatout;
+        this.entertain = entertain;
+        this.other = other;
+        this.groupexp = groupexp;
+        this.education = education;
+        this.clothes = clothes;
+    }
+    
     private String userId;
     private double budget;
     private double shopping;
@@ -22,7 +38,7 @@ public class Categories {
     private double entertain;
     private double other;
     private double groupexp;
-    private double gifts;
+    private double education;
     private double clothes;
     
 
@@ -114,12 +130,12 @@ public class Categories {
         this.groupexp = groupexp;
     }
 
-    public double getGifts() {
-        return gifts;
+    public double getEducation() {
+        return education;
     }
 
-    public void setGifts(double gifts) {
-        this.gifts = gifts;
+    public void setEducation(double education) {
+        this.education = education;
     }
 
     public double getClothes() {
